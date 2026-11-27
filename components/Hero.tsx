@@ -1,235 +1,211 @@
-
+import Button from "./Button";
+import Image from "next/image";
 import Link from "next/link";
 import Reveal from "./Reveal";
+import { client } from "@/sanity/lib/client";
+import { HERO_QUERY } from "@/sanity/lib/queries";
 
-export default function Hero() {
+export default async function Hero() {
+  const hero = await client.fetch(
+    HERO_QUERY,
+    {},
+    { cache: "no-store" }
+  );
+
+  if (!hero) return null;
+  const heading = hero.heading || "";
+
+const highlightText = hero.highlightText?.trim() || "";
+
+const renderHeadingLine = (line: string) => {
+  const index = highlightText
+    ? line.indexOf(highlightText)
+    : -1;
+
+  if (index === -1) return line;
+
   return (
-    <section className="relative isolate overflow-hidden bg-background px-6 pb-20 pt-32 md:pb-28 md:pt-40">
+    <>
+      {line.slice(0, index)}
+      <span className="relative isolate inline-block">
+        <span className="relative z-10">{highlightText}</span>
+        <span className="absolute -bottom-[0.02em] left-0 -z-0 h-[0.18em] w-full -rotate-2 rounded-sm bg-accent sm:h-[0.2em]" />
+      </span>
+      {line.slice(index + highlightText.length)}
+    </>
+  );
+};
+  return (
+    <section className="relative isolate overflow-hidden bg-background px-6 pb-16 pt-24 md:pb-24 md:pt-28">
+      {/* FULL HERO HALFTONE */}
+<div
+  aria-hidden="true"
+  className="hero-halftone pointer-events-none absolute inset-0 z-0"
+/>
+      <div className="relative z-10 mx-auto max-w-7xl">
 
-      {/* Background Grid */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 opacity-40"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, var(--surface) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--surface) 1px, transparent 1px)
-          `,
-          backgroundSize: "80px 80px",
-        }}
-      />
+        {/* TOP EDITORIAL BAR */}
+        <div className="mb-9 flex flex-col justify-between gap-4 border-b border-border/70 pb-5 sm:flex-row sm:items-center md:mb-12">
 
-      <div className="mx-auto max-w-7xl">
-
-        {/* Availability */}
-        <Reveal>
-          <div className="mb-12 flex items-center gap-3">
-            <span className="relative flex h-3 w-3">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-accent" />
-            </span>
-
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
-              Available for selected projects
+          <Reveal>
+            <p className="text-center text-[10px] font-semibold uppercase tracking-[0.3em] text-muted sm:text-left">
+              Independent Web Designer & Developer
             </p>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        {/* Hero Content */}
-        <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_0.9fr]">
+          <Reveal delay={100}>
+            <div className="relative left-1/2 inline-flex w-fit -translate-x-1/2 items-center gap-3 rounded-full border border-border/70 bg-surface/30 px-4 py-2.5 sm:left-0 sm:translate-x-0">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                <span className="relative h-2 w-2 rounded-full bg-accent" />
+              </span>
 
-          {/* Left Content */}
-          <div>
-            <Reveal delay={100}>
-              <h1 className="text-5xl font-bold leading-[1.02] tracking-[-0.06em] sm:text-6xl md:text-7xl xl:text-[88px]">
-                I BUILD
-                <br />
-                DIGITAL
-                <br />
-                <span className="relative inline-block">
-                  EXPERIENCES
-                  <span className="absolute bottom-1 left-0 -z-10 h-3 w-full bg-accent md:h-5" />
-                </span>
-                <br />
-                THAT MOVE
-                <br />
-                BUSINESSES.
-              </h1>
-            </Reveal>
-
-            <Reveal delay={200}>
-              <p className="mt-9 max-w-lg text-base leading-8 text-muted md:text-lg">
-                I design and build thoughtful websites that
-                combine modern aesthetics, clear communication,
-                and purposeful functionality to help businesses
-                grow their digital presence.
-              </p>
-            </Reveal>
-
-            <Reveal delay={300}>
-              <div className="mt-10 flex flex-wrap gap-4">
-
-                <Link
-                  href="#work"
-                  className="group inline-flex items-center gap-4 rounded-full bg-accent px-7 py-4 text-sm font-semibold text-accent-foreground transition-all duration-300 hover:-translate-y-1 hover:bg-foreground hover:text-background"
-                >
-                  Explore My Work
-
-                  <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                    ↗
-                  </span>
-                </Link>
-
-                <Link
-                  href="#contact"
-                  className="group inline-flex items-center gap-4 rounded-full border border-border px-7 py-4 text-sm font-semibold text-foreground transition-all duration-300 hover:-translate-y-1 hover:border-foreground"
-                >
-                  Let's Talk
-
-                  <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                    ↗
-                  </span>
-                </Link>
-
-              </div>
-            </Reveal>
-          </div>
-
-          {/* Right Interactive Visual */}
-          <Reveal delay={200}>
-            <div className="group relative mx-auto w-full max-w-xl">
-
-              {/* Glow */}
-              <div className="absolute inset-10 rounded-full bg-accent/20 blur-3xl transition-all duration-700 group-hover:scale-125 group-hover:bg-accent/30" />
-
-              {/* Main Browser */}
-              <div className="relative rounded-2xl border border-border bg-card p-3 shadow-2xl transition-all duration-500 group-hover:-translate-y-2 group-hover:rotate-1 md:p-5">
-
-                {/* Browser Header */}
-                <div className="flex items-center justify-between border-b border-border pb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-muted/50" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-muted/50" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-muted/50" />
-                  </div>
-
-                  <div className="rounded-full bg-surface px-5 py-2 text-[10px] tracking-wider text-muted">
-                    madebytrie.website
-                  </div>
-
-                  <span className="text-xs text-muted">↗</span>
-                </div>
-
-                {/* Website Preview */}
-                <div className="relative mt-3 overflow-hidden rounded-xl bg-surface p-6 md:p-8">
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold tracking-tight">
-                      YOUR BRAND<span className="text-accent">.</span>
-                    </span>
-
-                    <div className="flex gap-2">
-                      <span className="h-1.5 w-6 rounded-full bg-muted/40" />
-                      <span className="h-1.5 w-6 rounded-full bg-muted/40" />
-                    </div>
-                  </div>
-
-                  <div className="py-12 md:py-16">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
-                      Digital Experience
-                    </p>
-
-                    <h2 className="mt-5 max-w-xs text-4xl font-bold leading-[1.05] tracking-tight md:text-5xl">
-                      Make your
-                      <br />
-                      brand <span className="text-muted">stand out.</span>
-                    </h2>
-
-                    <div className="mt-7 h-2 w-20 rounded-full bg-accent" />
-
-                    <div className="mt-10 flex items-center justify-between">
-                      <span className="rounded-full bg-foreground px-5 py-3 text-[10px] font-semibold text-background">
-                        Discover More ↗
-                      </span>
-
-                      <span className="text-xs text-muted">
-                        01 / 03
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="h-14 rounded-lg bg-background" />
-                    <div className="h-14 rounded-lg bg-accent" />
-                    <div className="h-14 rounded-lg bg-foreground" />
-                  </div>
-
-                </div>
-
-                {/* Browser Footer */}
-                <div className="flex items-center justify-between px-2 pt-4 text-[10px] uppercase tracking-widest text-muted">
-                  <span>Design</span>
-                  <span>Development</span>
-                  <span>Experience</span>
-                </div>
-
-              </div>
-
-              {/* Floating Design Badge */}
-              <div className="absolute -left-5 top-1/4 rounded-xl border border-border bg-background p-4 shadow-xl transition-transform duration-500 group-hover:-translate-x-2 md:-left-10">
-                <p className="text-[10px] uppercase tracking-widest text-muted">
-                  Creative
-                </p>
-                <p className="mt-1 text-sm font-bold">
-                  Web Design
-                </p>
-              </div>
-
-              {/* Floating Responsive Badge */}
-              <div className="absolute -bottom-7 right-0 rounded-xl border border-border bg-background p-4 shadow-xl transition-transform duration-500 group-hover:translate-y-2 md:-right-6">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-lg">
-                    ↗
-                  </span>
-
-                  <div>
-                    <p className="text-[10px] uppercase tracking-widest text-muted">
-                      Built for
-                    </p>
-                    <p className="text-sm font-bold">
-                      Every Screen
-                    </p>
-                  </div>
-                </div>
-              </div>
-
+              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted">
+                {hero.availabilityText}
+              </span>
             </div>
           </Reveal>
 
         </div>
 
-        {/* Bottom Information */}
-        <Reveal delay={400}>
-          <div className="mt-28 grid gap-5 border-t border-border pt-6 text-xs uppercase tracking-widest text-muted md:grid-cols-3">
-            <p>Independent Web Designer & Developer</p>
+        {/* MAIN EDITORIAL GRID */}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
 
-            <p className="md:text-center">
-              Based in Indonesia · Working Worldwide
-            </p>
+          {/* LEFT CONTENT */}
+          <div className="relative z-10 lg:col-span-8">
 
-            <a
-              href="#work"
-              className="group flex items-center gap-2 transition-colors hover:text-foreground md:justify-end"
-            >
-              Scroll to Explore
-              <span className="inline-block transition-transform duration-300 group-hover:translate-y-1">
-                ↓
-              </span>
-            </a>
+            <Reveal delay={100}>
+
+      <h1 className="max-w-5xl text-center text-5xl sm:text-left font-bold leading-[1.05] tracking-[-0.06em] text-foreground sm:text-6xl md:text-7xl lg:text-[92px] xl:text-[108px]">        
+{renderHeadingLine(hero.headingLineOne || "")}{" "}
+{renderHeadingLine(hero.headingLineTwo || "")}{" "}
+{renderHeadingLine(hero.headingLineThree || "")}
+</h1>
+            </Reveal>
+
+            <div className="mt-8 max-w-2xl md:mt-10">
+
+  <Reveal delay={200}>
+    <p className="w-full text-center text-base leading-[1.9] tracking-[-0.01em] text-muted sm:text-left md:text-lg md:leading-[1.85]">
+      {hero.description}
+    </p>
+  </Reveal>
+
+  <Reveal delay={300}>
+  <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:justify-start">
+    <Button
+      href={hero.primaryButtonLink || "#work"}
+      variant="primary"
+    >
+      {hero.primaryButtonText}
+    </Button>
+
+    <Button
+      href={hero.secondaryButtonLink || "#contact"}
+      variant="secondary"
+    >
+      {hero.secondaryButtonText}
+    </Button>
+  </div>
+</Reveal>
+
+</div>
+
+          </div>
+
+          {/* RIGHT EDITORIAL DECORATION */}
+          <div className="relative mt-8 min-h-[460px] lg:col-span-4 lg:mt-0 lg:min-h-[520px]">
+
+            <div className="relative flex h-full w-full flex-col items-center justify-between gap-10 border-t border-border/70 pt-8 lg:absolute lg:inset-y-0 lg:right-0 lg:w-full lg:border-l lg:border-t-0 lg:pt-8 lg:pb-8 lg:pl-6 lg:items-end lg:gap-0"> 
+
+              <Reveal delay={300}>
+                <p className="text-center text-[10px] font-semibold uppercase leading-7 tracking-[0.25em] text-muted lg:text-right">
+                  DIGITAL
+                  <br />
+                  EXPERIENCES
+                  <br />
+                  THAT WORK
+                </p>
+              </Reveal>
+
+              <Reveal delay={400}>
+               
+<div
+  aria-hidden="true"
+  className="absolute -right-2 top-[38%] h-px w-28 -rotate-45 bg-accent/50"
+/>
+                 <div className="group relative flex h-40 w-40 items-center justify-center rounded-full border border-border bg-surface/30 transition-all duration-500 hover:border-accent/60 sm:h-48 sm:w-48">
+
+  {/* OUTER RING */}
+  <div className="absolute inset-3 rounded-full border border-border/80 transition-all duration-1000 group-hover:rotate-90 group-hover:border-accent/50" />
+
+  {/* INNER RING */}
+  <div className="absolute inset-6 rounded-full border border-accent/50 transition-transform duration-700 group-hover:scale-105" />
+
+{/* CENTER PORTRAIT */}
+<div className="relative">
+
+  {/* SOFT GLOW */}
+  <span
+    aria-hidden="true"
+    className="pointer-events-none absolute -inset-4 rounded-full bg-accent/15 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+  />
+
+  {/* PROFILE IMAGE */}
+  <div className="relative h-24 w-24 overflow-hidden rounded-full border border-accent/70 shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:border-accent sm:h-28 sm:w-28">
+    <Image
+      src="/images/profile.png"
+      alt="Trie — Personal Portfolio"
+      fill
+      sizes="112px"
+      className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
+    />
+  </div>
+
+</div>
+
+  {/* ACCENT DOTS */}
+  <span className="absolute right-4 top-8 h-3 w-3 rounded-full border-2 border-background bg-accent shadow-sm transition-transform duration-500 group-hover:scale-125" />
+
+  <span className="absolute bottom-7 left-5 h-2 w-2 rounded-full bg-foreground/40 transition-all duration-500 group-hover:scale-125 group-hover:bg-accent" />
+
+</div>
+                <div className="mt-8 text-center lg:text-right">
+  <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted">
+  Personal Portfolio
+</p>
+  <p className="mt-2 text-sm font-medium tracking-[-0.02em] text-foreground">
+  Web Design & Development
+</p>
+</div>
+              </Reveal>
+
+              <Reveal delay={500}>
+                <p className="text-center text-[10px] font-semibold uppercase leading-7 tracking-[0.25em] text-muted lg:text-right">
+                  STRATEGY
+                  <br />
+                  DESIGN
+                  <br />
+                  DEVELOPMENT
+                </p>
+              </Reveal>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* BOTTOM INFORMATION */}
+        <Reveal delay={500}>
+          <div className="mt-20 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-muted sm:flex-row sm:text-left">
+            <p>{hero.bottomLeftText}</p>
+            <p>{hero.bottomRightText}</p>
           </div>
         </Reveal>
 
       </div>
+
     </section>
   );
 }

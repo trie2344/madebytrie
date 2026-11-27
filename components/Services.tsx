@@ -1,5 +1,10 @@
 
 import Reveal from "./Reveal";
+import { client } from "@/sanity/lib/client";
+import {
+  SERVICES_QUERY,
+  SERVICES_SECTION_QUERY,
+} from "@/sanity/lib/queries";
 
 const services = [
   {
@@ -32,29 +37,71 @@ const services = [
   },
 ];
 
-export default function Services() {
+export default async function Services() {
+  const [services, section] = await Promise.all([
+  client.fetch(SERVICES_QUERY, {}, { cache: "no-store" }),
+  client.fetch(SERVICES_SECTION_QUERY, {}, { cache: "no-store" }),
+]);
+
+const heading =
+  section?.heading || "Digital Solutions Designed Around Your Business.";
+
+const highlightText = section?.highlightText || "";
+
+const highlightIndex = highlightText
+  ? heading.indexOf(highlightText)
+  : -1;
+
+const before =
+  highlightIndex >= 0
+    ? heading.slice(0, highlightIndex)
+    : heading;
+
+const highlighted =
+  highlightIndex >= 0
+    ? heading.slice(
+        highlightIndex,
+        highlightIndex + highlightText.length
+      )
+    : "";
+
+const after =
+  highlightIndex >= 0
+    ? heading.slice(highlightIndex + highlightText.length)
+    : "";
   return (
     <section
       id="services"
-      className="bg-[#F4F3EE] px-6 py-28"
+      className="bg-background px-6 pt-20 pb-12 md:pt-28 md:pb-16"
     >
       <div className="mx-auto max-w-7xl">
 
+        {/* SECTION HEADER */}
         <Reveal>
-          <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div className="mb-16 grid gap-8 md:mb-20 md:grid-cols-2 md:items-center">
             <div>
-              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#777777]">
-                What I Can Do For You
-              </p>
+              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-muted">
+  {section?.sectionLabel || "What I Can Do For You"}
+</p>
 
-              <h2 className="max-w-4xl text-5xl font-bold leading-tight tracking-tight md:text-7xl">
-                Services built
-                <br />
-                for <span className="text-[#777777]">your growth.</span>
-              </h2>
+              <h2 className="max-w-3xl text-5xl font-bold leading-[1.05] tracking-[-0.05em] text-foreground md:text-7xl">
+  {before}
+  {highlighted && (
+    <span className="relative inline-block">
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-1 h-3 bg-accent/60"
+      />
+      <span className="relative text-foreground">
+        {highlighted}
+      </span>
+    </span>
+  )}
+  {after}
+</h2>
             </div>
 
-            <p className="max-w-md text-sm leading-7 text-[#777777]">
+            <p className="max-w-md text-[18px] leading-8 text-muted md:justify-self-end">
               From building your online presence to improving
               an existing website, I create thoughtful digital
               experiences tailored to your business needs.
@@ -62,35 +109,46 @@ export default function Services() {
           </div>
         </Reveal>
 
-        <div className="grid gap-5 md:grid-cols-2">
-          {services.map((service, index) => (
-            <Reveal key={service.number} delay={(index % 2) * 120}>
-              <article className="group flex h-full min-h-[340px] flex-col justify-between rounded-2xl border border-[#D9D8D0] bg-transparent p-8 transition-all duration-300 hover:-translate-y-1 hover:border-[#C1ED00] hover:bg-[#C1ED00] md:p-10">
+        {/* SERVICE ROWS */}
+        <div className="border-t border-border">
+          {services.map((service: {
+  number: string;
+  title: string;
+  description: string;
+  detail: string;
+}, index: number) => (
+            <Reveal key={service.number} delay={index * 100}>
+              <article className="group grid gap-5 border-b border-border px-5 py-12 transition-colors duration-300 hover:bg-surface md:grid-cols-12 md:items-center md:gap-6 md:px-8 md:py-14">
+                {/* NUMBER */}
+                <div className="md:col-span-1">
+                  <span className="text-sm font-medium tabular-nums text-muted">
+                    {service.number}
+                  </span>
+                </div>
 
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium tracking-wider text-[#777777] transition-colors group-hover:text-[#171717]">
-                      {service.number} / SERVICE
-                    </span>
-
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D9D8D0] text-xl transition-all duration-300 group-hover:rotate-45 group-hover:border-[#171717] group-hover:bg-[#171717] group-hover:text-[#C1ED00]">
-                      ↗
-                    </span>
-                  </div>
-
-                  <h3 className="mt-14 text-3xl font-bold tracking-tight text-[#171717] md:text-4xl">
+                {/* TITLE */}
+                <div className="md:col-span-4">
+                  <h3 className="text-2xl font-semibold tracking-tight text-foreground transition-transform duration-300 group-hover:translate-x-2 md:text-3xl">
                     {service.title}
                   </h3>
+                </div>
 
-                  <p className="mt-5 max-w-md text-sm leading-7 text-[#777777] transition-colors group-hover:text-[#171717]">
+                {/* DESCRIPTION */}
+                <div className="md:col-span-5">
+                  <p className="max-w-xl text-[18px] leading-8 text-muted">
                     {service.description}
+                  </p>
+
+                  <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-muted">
+                    {service.detail}
                   </p>
                 </div>
 
-                <div className="mt-10 border-t border-[#D9D8D0] pt-5 transition-colors group-hover:border-[#171717]/20">
-                  <p className="text-xs font-medium uppercase tracking-wider text-[#777777] transition-colors group-hover:text-[#171717]">
-                    {service.detail}
-                  </p>
+                {/* ARROW */}
+                <div className="hidden justify-end md:col-span-2 md:flex">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full border border-border text-xl text-foreground transition-all duration-300 group-hover:rotate-45 group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground">
+                    ↗
+                  </span>
                 </div>
 
               </article>

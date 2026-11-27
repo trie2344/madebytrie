@@ -1,98 +1,91 @@
 
 import Reveal from "./Reveal";
+import TestimonialsCarousel from "./TestimonialsCarousel";
+import { client } from "@/sanity/lib/client";
+import {
+  TESTIMONIALS_QUERY,
+  TESTIMONIALS_SECTION_QUERY,
+} from "@/sanity/lib/queries";
 
-const testimonials = [
-  {
-    number: "01",
-    title: "Client Experience",
-    description:
-      "This space is reserved for genuine feedback from a client after completing a project together.",
-  },
-  {
-    number: "02",
-    title: "Project Feedback",
-    description:
-      "Real stories and experiences will be featured here as new client collaborations are completed.",
-  },
-];
 
-export default function Testimonials() {
+export default async function Testimonials() {
+  const [testimonials, section] = await Promise.all([
+  client.fetch(TESTIMONIALS_QUERY, {}, { cache: "no-store" }),
+  client.fetch(TESTIMONIALS_SECTION_QUERY, {}, { cache: "no-store" }),
+]);
+
+  if (!testimonials || testimonials.length === 0) {
+    return null;
+  }
+  const sectionLabel = section?.sectionLabel || "Client Feedback";
+const heading = section?.heading || "Words from my clients.";
+const highlightText = section?.highlightText || "";
+const description =
+  section?.description ||
+  "A few words from the people I've had the opportunity to work with.";
+
+const highlightIndex = highlightText
+  ? heading.indexOf(highlightText)
+  : -1;
+
+const before =
+  highlightIndex >= 0
+    ? heading.slice(0, highlightIndex)
+    : heading;
+
+const highlighted =
+  highlightIndex >= 0
+    ? heading.slice(
+        highlightIndex,
+        highlightIndex + highlightText.length
+      )
+    : "";
+
+const after =
+  highlightIndex >= 0
+    ? heading.slice(highlightIndex + highlightText.length)
+    : "";
+
   return (
-    <section className="bg-surface px-6 py-28 text-foreground">
+    <section className="overflow-hidden bg-contrast-background px-6 pt-20 pb-12 text-contrast-foreground md:pt-28 md:pb-16">
       <div className="mx-auto max-w-7xl">
 
-        {/* Header */}
-        <Reveal>
-          <div className="mb-20 flex flex-col justify-between gap-8 md:flex-row md:items-end">
 
-            <div>
-              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-muted">
-                Client Feedback
-              </p>
+{/* HEADER */}
+<Reveal>
+  <div className="mb-14 flex flex-col justify-between gap-8 border-b border-contrast-foreground/15 pb-10 md:mb-16 md:flex-row md:items-end md:gap-12">
+    <div>
+      <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+        {sectionLabel}
+      </p>
 
-              <h2 className="max-w-3xl text-5xl font-bold leading-tight tracking-tight md:text-7xl">
-                Good work.
-                <br />
-                <span className="text-muted">Real relationships.</span>
-              </h2>
-            </div>
+      <h2 className="testimonials-heading text-5xl font-bold leading-[1.05] tracking-[-0.06em] md:text-7xl">
+        {before}
+        {highlighted && (
+          <span className="relative inline-block">
+            <span
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-1 h-3 bg-accent/60"
+            />
+            <span className="relative text-[#F4F3EE]">
+              {highlighted}
+            </span>
+          </span>
+        )}
+        {after}
+      </h2>
+    </div>
 
-            <p className="max-w-md text-sm leading-7 text-muted">
-              Every project is built on communication,
-              collaboration, and a shared vision.
-              Genuine client experiences will be featured here.
-            </p>
+    <p className="max-w-md text-sm leading-7 text-contrast-foreground/60 md:text-base md:leading-8">
+      {description}
+    </p>
+  </div>
+</Reveal>
 
-          </div>
-        </Reveal>
 
-        {/* Feedback Cards */}
-        <div className="grid gap-6 md:grid-cols-2">
-
-          {testimonials.map((item, index) => (
-            <Reveal key={item.number} delay={index * 150}>
-              <article className="group flex min-h-[300px] flex-col justify-between rounded-2xl border border-border bg-background p-8 transition-all duration-300 hover:-translate-y-2 hover:border-accent md:p-10">
-
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold tracking-widest text-muted">
-                      / {item.number}
-                    </span>
-
-                    <span className="text-4xl text-accent">
-                      “
-                    </span>
-                  </div>
-
-                  <h3 className="mt-12 text-2xl font-bold tracking-tight">
-                    {item.title}
-                  </h3>
-
-                  <p className="mt-4 max-w-md text-sm leading-7 text-muted">
-                    {item.description}
-                  </p>
-                </div>
-
-                <div className="mt-10 flex items-center justify-between border-t border-border pt-5">
-                  <span className="text-xs uppercase tracking-widest text-muted">
-                    Genuine feedback
-                  </span>
-
-                  <span className="text-xl text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                    ↗
-                  </span>
-                </div>
-
-              </article>
-            </Reveal>
-          ))}
-
-        </div>
-
-        <Reveal delay={200}>
-          <p className="mt-8 text-xs text-muted">
-            Real client testimonials will be published with permission.
-          </p>
+        {/* TESTIMONIAL CAROUSEL */}
+        <Reveal delay={150}>
+          <TestimonialsCarousel testimonials={testimonials} />
         </Reveal>
 
       </div>

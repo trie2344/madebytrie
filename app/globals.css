@@ -1,20 +1,119 @@
 
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ========================================
+   01. DESIGN TOKENS
+======================================== */
 
 :root {
+  /* BRAND COLORS */
   --background: #F4F3EE;
   --foreground: #171717;
+
   --accent: #C1ED00;
+  --accent-hover: #AED600;
+  --accent-active: #9ABB00;
+  --accent-foreground: #171717;
+
+  /* NEUTRAL COLORS */
   --muted: #777777;
   --surface: #D9D8D0;
+  --surface-soft: #E9E8E2;
+
+  /* COMPONENT COLORS */
+  --border: var(--surface);
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+
+  /* CONTRAST SECTION */
+  --contrast-background: #171717;
+  --contrast-foreground: #F4F3EE;
+
+  /* TYPOGRAPHY */
+  --font-heading-family: var(--font-sora);
+  --font-body-family: var(--font-inter);
+
+  /* LAYOUT */
+  --container-width: 1440px;
+  --page-padding: 64px;
+  --section-spacing: 120px;
+
+  /* RADIUS */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* TRANSITIONS */
+  --transition-fast: 180ms ease-out;
+  --transition-normal: 250ms ease-out;
+  --transition-slow: 600ms ease-out;
+
+  /* HERO GRID */
+  --grid-line: rgb(23 23 23 / 0.045);
 }
+
+/* ========================================
+   02. DARK MODE
+======================================== */
+
+.dark {
+  --background: #171717;
+  --foreground: #F4F3EE;
+
+  --accent: #C1ED00;
+  --accent-hover: #D0F52A;
+  --accent-active: #A8C900;
+  --accent-foreground: #171717;
+
+  --muted: #A1A1AA;
+  --surface: #292929;
+  --surface-soft: #242424;
+
+  --border: #3F3F46;
+  --card: #202020;
+  --card-foreground: #F4F3EE;
+
+  --contrast-background: #202020;
+  --contrast-foreground: #F4F3EE;
+
+  --grid-line: rgb(244 243 238 / 0.055);
+}
+
+/* ========================================
+   03. TAILWIND THEME MAPPING
+======================================== */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-heading: var(--font-sora);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+
+  --color-border: var(--border);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-contrast-background: var(--contrast-background);
+  --color-contrast-foreground: var(--contrast-foreground);
+
+  --font-sans: var(--font-body-family);
+  --font-heading: var(--font-heading-family);
 }
+
+
+/* ========================================
+   04. GLOBAL RESET
+======================================== */
 
 * {
   box-sizing: border-box;
@@ -22,21 +121,379 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 100px;
 }
 
 body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-body-family), sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-sora), sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading-family), sans-serif;
+  color: var(--foreground);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 ::selection {
   background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* ========================================
+   05. REUSABLE LAYOUT
+======================================== */
+
+.section {
+  padding-block: var(--section-spacing);
+}
+
+.bg-dark {
+  background: var(--contrast-background);
+  color: var(--contrast-foreground);
+}
+
+.bg-dark h1,
+.bg-dark h2,
+.bg-dark h3,
+.bg-dark h4 {
+  color: var(--contrast-foreground);
+}
+
+/* ========================================
+   06. BUTTON SYSTEM
+======================================== */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-height: 52px;
+  padding-inline: 24px;
+
+  border: 0;
+  border-radius: var(--radius-full);
+
+  background: var(--accent);
+  color: var(--accent-foreground);
+
+  font-weight: 600;
+
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  background: var(--accent-active);
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-height: 52px;
+  padding-inline: 24px;
+
+  border: 1px solid var(--foreground);
+  border-radius: var(--radius-full);
+
+  background: transparent;
   color: var(--foreground);
+
+  font-weight: 600;
+
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--foreground);
+  color: var(--background);
+  transform: translateY(-2px);
+}
+
+:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 4px;
+}
+
+
+/* CTA - Light Mode */
+a.cta-button {
+  background-color: #171717 !important;
+  color: #F4F3EE !important;
+  border: 1px solid #171717 !important;
+}
+
+a.cta-button:hover {
+  background-color: #C1ED00 !important;
+  color: #171717 !important;
+  border-color: #C1ED00 !important;
+}
+
+/* CTA - Dark Mode */
+.dark a.cta-button {
+  background-color: #C1ED00 !important;
+  color: #171717 !important;
+  border-color: #C1ED00 !important;
+}
+
+.dark a.cta-button:hover {
+  background-color: #202020 !important;
+  color: #F4F3EE !important;
+  border-color: #202020 !important;
+}
+
+/* ========================================
+   07. CARD SYSTEM
+======================================== */
+
+.card {
+  padding: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+
+  background: var(--card);
+  color: var(--card-foreground);
+
+  transition:
+    transform var(--transition-normal),
+    background var(--transition-normal),
+    border-color var(--transition-normal);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+/* ========================================
+   08. CAPABILITIES MARQUEE
+======================================== */
+
+@keyframes capabilities-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.capabilities-marquee {
+  width: 100%;
+  overflow: hidden;
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 7%,
+    black 93%,
+    transparent 100%
+  );
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 7%,
+    black 93%,
+    transparent 100%
+  );
+}
+
+.capabilities-track {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+
+  width: max-content;
+  white-space: nowrap;
+
+  animation: capabilities-marquee 75s linear infinite;
+  will-change: transform;
+}
+
+.capabilities-track > div {
+  flex-shrink: 0;
+}
+
+.capabilities-marquee:hover .capabilities-track {
+  animation-play-state: paused;
+}
+
+/* ========================================
+   09. HERO GRID
+======================================== */
+
+.hero-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      var(--grid-line) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      var(--grid-line) 1px,
+      transparent 1px
+    );
+
+  background-size: 60px 60px;
+}
+
+/* ========================================
+   10. RESPONSIVE
+======================================== */
+
+@media (max-width: 1023px) {
+  :root {
+    --page-padding: 32px;
+    --section-spacing: 88px;
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --page-padding: 24px;
+    --section-spacing: 72px;
+  }
+}
+
+/* ========================================
+   11. ACCESSIBILITY
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .capabilities-track {
+    animation: none;
+  }
+}
+/* HERO FULL HALFTONE BACKGROUND */
+.hero-halftone {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    var(--muted) 0.8px,
+    transparent 0.8px
+  );
+  background-size: 15px 15px;
+  opacity: 0.14;
+  pointer-events: none;
+}
+.about-cta:hover {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+/* CTA - Light Mode */
+.cta-button {
+  background-color: #171717;
+  color: #F4F3EE !important;
+  border: 1px solid #171717;
+}
+
+.cta-button:hover {
+  background-color: #C1ED00;
+  color: #171717 !important;
+  border-color: #C1ED00;
+}
+
+/* CTA - Dark Mode */
+.dark .cta-button {
+  background-color: #C1ED00;
+  color: #171717 !important;
+  border-color: #C1ED00;
+}
+
+.dark .cta-button:hover {
+  background-color: #202020;
+  color: #F4F3EE !important;
+  border-color: #202020;
+}
+/* TRUST CTA HEADING */
+.trust-cta-heading {
+  color: #FFFFFF !important;
+}
+
+.trust-cta-heading span {
+  color: var(--accent) !important;
+}
+
+.dark .trust-cta-heading {
+  color: var(--contrast-foreground) !important;
+}
+
+
+/* TRUST CTA BUTTON - ALL MODES */
+a.cta-button {
+  background-color: var(--accent) !important;
+  color: #171717 !important;
+  border-color: var(--accent) !important;
+}
+
+a.cta-button:hover {
+  background-color: #F4F3EE !important;
+  color: #171717 !important;
+  border-color: #F4F3EE !important;
+}
+/* TESTIMONIALS HEADING */
+.testimonials-heading {
+  color: #F4F3EE !important;
+}
+
+.testimonials-heading span {
+  color: #F4F3EE !important;
 }

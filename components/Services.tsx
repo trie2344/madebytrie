@@ -1,105 +1,162 @@
 
-export default function Services() {
+import Reveal from "./Reveal";
+import { client } from "@/sanity/lib/client";
+import {
+  SERVICES_QUERY,
+  SERVICES_SECTION_QUERY,
+} from "@/sanity/lib/queries";
+
+const services = [
+  {
+    number: "01",
+    title: "Business Website",
+    description:
+      "A professional online presence that communicates your brand, builds credibility, and helps potential customers understand your business.",
+    detail: "For businesses & growing brands",
+  },
+  {
+    number: "02",
+    title: "Landing Page Design",
+    description:
+      "Focused, persuasive landing pages that present your offer clearly and guide visitors toward taking the next step.",
+    detail: "For campaigns & specific offers",
+  },
+  {
+    number: "03",
+    title: "Website Redesign",
+    description:
+      "Transform an outdated website into a modern, intuitive experience with improved structure, visual consistency, and usability.",
+    detail: "For existing websites",
+  },
+  {
+    number: "04",
+    title: "WordPress & Elementor",
+    description:
+      "Flexible and easy-to-manage websites built with WordPress and Elementor, giving you more control over your content.",
+    detail: "For flexible website management",
+  },
+];
+
+export default async function Services() {
+  const [services, section] = await Promise.all([
+  client.fetch(SERVICES_QUERY, {}, { cache: "no-store" }),
+  client.fetch(SERVICES_SECTION_QUERY, {}, { cache: "no-store" }),
+]);
+
+const heading =
+  section?.heading || "Digital Solutions Designed Around Your Business.";
+
+const highlightText = section?.highlightText || "";
+
+const highlightIndex = highlightText
+  ? heading.indexOf(highlightText)
+  : -1;
+
+const before =
+  highlightIndex >= 0
+    ? heading.slice(0, highlightIndex)
+    : heading;
+
+const highlighted =
+  highlightIndex >= 0
+    ? heading.slice(
+        highlightIndex,
+        highlightIndex + highlightText.length
+      )
+    : "";
+
+const after =
+  highlightIndex >= 0
+    ? heading.slice(highlightIndex + highlightText.length)
+    : "";
   return (
-    <>
-      
-      {/* SERVICES SECTION */}
-      <section
-        id="services"
-        className="bg-[#F4F3EE] px-6 py-28"
-      >
-        <div className="mx-auto max-w-7xl">
+    <section
+      id="services"
+      className="bg-background px-6 pt-20 pb-12 md:pt-28 md:pb-16"
+    >
+      <div className="mx-auto max-w-7xl">
 
-          <div className="mb-16">
-            <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-neutral-500">
-              What I Can Do For You
+        {/* SECTION HEADER */}
+        <Reveal>
+          <div className="mb-16 grid gap-8 md:mb-20 md:grid-cols-2 md:items-center">
+            <div>
+              <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-muted">
+  {section?.sectionLabel || "What I Can Do For You"}
+</p>
+
+              <h2 className="max-w-3xl text-5xl font-bold leading-[1.05] tracking-[-0.05em] text-foreground md:text-7xl">
+  {before}
+  {highlighted && (
+    <span className="relative inline-block">
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-1 h-3 bg-accent/60"
+      />
+      <span className="relative text-foreground">
+        {highlighted}
+      </span>
+    </span>
+  )}
+  {after}
+</h2>
+            </div>
+
+            <p className="max-w-md text-[18px] leading-8 text-muted md:justify-self-end">
+              From building your online presence to improving
+              an existing website, I create thoughtful digital
+              experiences tailored to your business needs.
             </p>
-
-            <h2 className="max-w-4xl text-5xl font-bold leading-tight tracking-tight md:text-7xl">
-              Services built
-              <br />
-              for <span className="text-neutral-400">your growth.</span>
-            </h2>
           </div>
+        </Reveal>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+        {/* SERVICE ROWS */}
+        <div className="border-t border-border">
+          {services.map((service: {
+  number: string;
+  title: string;
+  description: string;
+  detail: string;
+}, index: number) => (
+            <Reveal key={service.number} delay={index * 100}>
+              <article className="group grid gap-5 border-b border-border px-5 py-12 transition-colors duration-300 hover:bg-surface md:grid-cols-12 md:items-center md:gap-6 md:px-8 md:py-14">
+                {/* NUMBER */}
+                <div className="md:col-span-1">
+                  <span className="text-sm font-medium tabular-nums text-muted">
+                    {service.number}
+                  </span>
+                </div>
 
-            {/* SERVICE 01 */}
-            <article className="group rounded-2xl border border-neutral-300 p-8 transition duration-300 hover:border-[#C1ED00] hover:bg-[#C1ED00] lg:p-10">
-              <div className="flex justify-between">
-                <span className="text-sm text-neutral-500 group-hover:text-black">01 / SERVICE</span>
-                <span className="text-2xl transition group-hover:rotate-45">↗</span>
-              </div>
+                {/* TITLE */}
+                <div className="md:col-span-4">
+                  <h3 className="text-2xl font-semibold tracking-tight text-foreground transition-transform duration-300 group-hover:translate-x-2 md:text-3xl">
+                    {service.title}
+                  </h3>
+                </div>
 
-              <h3 className="mt-16 text-3xl font-bold tracking-tight md:text-4xl">
-                Business Website
-              </h3>
+                {/* DESCRIPTION */}
+                <div className="md:col-span-5">
+                  <p className="max-w-xl text-[18px] leading-8 text-muted">
+                    {service.description}
+                  </p>
 
-              <p className="mt-5 max-w-md text-sm leading-7 text-neutral-600">
-                Professional websites that communicate your brand,
-                build trust, and help your business establish
-                a strong digital presence.
-              </p>
-            </article>
+                  <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-muted">
+                    {service.detail}
+                  </p>
+                </div>
 
-            {/* SERVICE 02 */}
-            <article className="group rounded-2xl border border-neutral-300 p-8 transition duration-300 hover:border-[#C1ED00] hover:bg-[#C1ED00] lg:p-10">
-              <div className="flex justify-between">
-                <span className="text-sm text-neutral-500 group-hover:text-black">02 / SERVICE</span>
-                <span className="text-2xl transition group-hover:rotate-45">↗</span>
-              </div>
+                {/* ARROW */}
+                <div className="hidden justify-end md:col-span-2 md:flex">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full border border-border text-xl text-foreground transition-all duration-300 group-hover:rotate-45 group-hover:border-accent group-hover:bg-accent group-hover:text-accent-foreground">
+                    ↗
+                  </span>
+                </div>
 
-              <h3 className="mt-16 text-3xl font-bold tracking-tight md:text-4xl">
-                Landing Page Design
-              </h3>
-
-              <p className="mt-5 max-w-md text-sm leading-7 text-neutral-600">
-                Focused landing pages designed to communicate
-                your offer clearly and guide visitors toward
-                meaningful action.
-              </p>
-            </article>
-
-            {/* SERVICE 03 */}
-            <article className="group rounded-2xl border border-neutral-300 p-8 transition duration-300 hover:border-[#C1ED00] hover:bg-[#C1ED00] lg:p-10">
-              <div className="flex justify-between">
-                <span className="text-sm text-neutral-500 group-hover:text-black">03 / SERVICE</span>
-                <span className="text-2xl transition group-hover:rotate-45">↗</span>
-              </div>
-
-              <h3 className="mt-16 text-3xl font-bold tracking-tight md:text-4xl">
-                Website Redesign
-              </h3>
-
-              <p className="mt-5 max-w-md text-sm leading-7 text-neutral-600">
-                Transform outdated websites into modern,
-                user-friendly experiences with better structure,
-                clarity, and visual consistency.
-              </p>
-            </article>
-
-            {/* SERVICE 04 */}
-            <article className="group rounded-2xl border border-neutral-300 p-8 transition duration-300 hover:border-[#C1ED00] hover:bg-[#C1ED00] lg:p-10">
-              <div className="flex justify-between">
-                <span className="text-sm text-neutral-500 group-hover:text-black">04 / SERVICE</span>
-                <span className="text-2xl transition group-hover:rotate-45">↗</span>
-              </div>
-
-              <h3 className="mt-16 text-3xl font-bold tracking-tight md:text-4xl">
-                WordPress & Elementor
-              </h3>
-
-              <p className="mt-5 max-w-md text-sm leading-7 text-neutral-600">
-                Flexible, easy-to-manage websites built with
-                WordPress and Elementor to support your
-                business needs.
-              </p>
-            </article>
-
-          </div>
-
+              </article>
+            </Reveal>
+          ))}
         </div>
-      </section>
-    </>
+
+      </div>
+    </section>
   );
 }
